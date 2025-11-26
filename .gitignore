@@ -1,0 +1,37 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Additional Gradle files
+.gradle/
+*/build/
+
+# Android Studio
+*.iml
+.idea/
+.idea/*
+!.idea/codeStyles
+!.idea/inspectionProfiles
+
+# Gradle cache
+.gradle/
+.gradletasknamecache
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# OS-specific files
+.DS_Store
+Thumbs.db
