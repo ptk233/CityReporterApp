@@ -1,9 +1,10 @@
 # application-prod.yml - Konfiguracja dla środowiska produkcyjnego
 
 spring:
-  # Konfiguracja bazy danych - używamy DATABASE_URL od Railway
+  # Konfiguracja bazy danych - Railway daje URL bez jdbc: prefix
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/railway}
+    # Dodajemy jdbc: prefix jeśli Railway go nie ma
+    url: jdbc:${DATABASE_URL:postgresql://localhost:5432/railway}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
