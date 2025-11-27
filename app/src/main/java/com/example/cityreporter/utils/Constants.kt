@@ -11,8 +11,11 @@ object Constants {
     const val KEY_USER_ROLE = "user_role"
     
     // API endpoints
-    const val BASE_URL = "http://10.0.2.2:8080/" // dla emulatora Android
+    // const val BASE_URL = "http://10.0.2.2:8080/" // dla emulatora Android (lokalny serwer)
     // const val BASE_URL = "http://192.168.1.X:8080/" // dla prawdziwego urządzenia - podmień X na IP twojego komputera
+    
+    // Production URL (Railway)
+    const val BASE_URL = "https://city-reporter-backend-production-xxxx.up.railway.app/" // ⚠️ ZAMIEŃ na swój URL z Railway!
     
     // Map settings
     const val DEFAULT_MAP_ZOOM = 15f

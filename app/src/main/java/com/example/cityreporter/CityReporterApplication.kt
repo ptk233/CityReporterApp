@@ -1,6 +1,7 @@
 package com.example.cityreporter
 
 import android.app.Application
+import com.google.maps.android.ktx.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
