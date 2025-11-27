@@ -1,0 +1,64 @@
+# application-prod.yml - Konfiguracja dla środowiska produkcyjnego
+
+spring:
+  # Konfiguracja bazy danych - Railway używa DATABASE_PRIVATE_URL
+  datasource:
+    url: ${DATABASE_PRIVATE_URL:${DATABASE_URL:jdbc:postgresql://localhost:5432/railway}}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # Konfiguracja JPA/Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        show_sql: false
+    show-sql: false
+    open-in-view: false
+
+  # Konfiguracja dla plików
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+# Port serwera - Railway/Render używają zmiennej PORT
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: always
+    include-stacktrace: never
+
+# Konfiguracja JWT - używamy zmiennej środowiskowej
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000  # 24 godziny w milisekundach
+
+# Actuator dla health check
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+# Logging - mniej szczegółowe w produkcji
+logging:
+  level:
+    root: INFO
+    com.example.cityreporter: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
