@@ -2,6 +2,22 @@ package com.example.cityreporter.dto
 
 import com.example.cityreporter.entity.Report
 import com.example.cityreporter.entity.User
+import com.example.cityreporter.entity.UserRole
+import java.time.LocalDateTime
+
+/**
+ * DTO dla użytkownika (używane w AdminController)
+ */
+data class UserDto(
+    val id: String,
+    val email: String,
+    val name: String,
+    val phoneNumber: String?,
+    val role: UserRole,
+    val isActive: Boolean,
+    val points: Int,
+    val createdAt: LocalDateTime
+)
 
 /**
  * Konwersja Report Entity → ReportDto
