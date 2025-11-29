@@ -21,4 +21,6 @@ interface ReportRepository : JpaRepository<Report, String> {
     fun findByUserId(userId: String, pageable: Pageable): Page<Report>
 
     fun countByStatus(status: ReportStatus): Long
+
+    fun findTop10ByOrderByCreatedAtDesc(): List<Report>
 }
