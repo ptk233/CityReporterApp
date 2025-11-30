@@ -19,9 +19,33 @@ class AuthService(
 ) {
     
     fun register(request: RegisterRequest): UserResponse {
+        // Walidacja email
+        if (!request.email.matches(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))) {
+            throw IllegalArgumentException("Nieprawidłowy format adresu email")
+        }
+        
         // Sprawdź czy email już istnieje
         if (userRepository.existsByEmail(request.email)) {
-            throw IllegalArgumentException("Email już jest używany")
+            throw IllegalArgumentException("Email jest już używany")
+        }
+        
+        // Walidacja hasła
+        if (request.password.length < 8) {
+            throw IllegalArgumentException("Hasło musi mieć minimum 8 znaków")
+        }
+        if (!request.password.matches(Regex(".*[a-z].*"))) {
+            throw IllegalArgumentException("Hasło musi zawierać małą literę")
+        }
+        if (!request.password.matches(Regex(".*[A-Z].*"))) {
+            throw IllegalArgumentException("Hasło musi zawierać dużą literę")
+        }
+        if (!request.password.matches(Regex(".*\\d.*"))) {
+            throw IllegalArgumentException("Hasło musi zawierać cyfrę")
+        }
+        
+        // Walidacja imienia
+        if (request.name.isBlank() || request.name.length < 3) {
+            throw IllegalArgumentException("Imię i nazwisko musi mieć minimum 3 znaki")
         }
         
         val rawPassword = request.password

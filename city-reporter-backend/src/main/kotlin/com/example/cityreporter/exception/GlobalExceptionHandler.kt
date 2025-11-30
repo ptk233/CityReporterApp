@@ -1,6 +1,5 @@
 package com.example.cityreporter.exception
 
-import jakarta.persistence.EntityNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
@@ -8,95 +7,67 @@ import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import java.time.LocalDateTime
+
+data class ErrorResponse(
+    val message: String,
+    val errors: Map<String, String>? = null
+)
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-    
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-        val errors = ex.bindingResult.allErrors.associate { error ->
+    fun handleValidationExceptions(
+        ex: MethodArgumentNotValidException
+    ): ResponseEntity<ErrorResponse> {
+        val errors = mutableMapOf<String, String>()
+        ex.bindingResult.allErrors.forEach { error ->
             val fieldName = (error as FieldError).field
             val errorMessage = error.defaultMessage ?: "Błąd walidacji"
-            fieldName to errorMessage
+            errors[fieldName] = errorMessage
         }
         
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.BAD_REQUEST.value(),
-            error = "Validation Failed",
-            message = "Błąd walidacji danych",
-            details = errors
-        )
-        
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(
+                message = "Nieprawidłowe dane wejściowe",
+                errors = errors
+            ))
     }
-    
-    @ExceptionHandler(EntityNotFoundException::class)
-    fun handleEntityNotFoundException(ex: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.NOT_FOUND.value(),
-            error = "Not Found",
-            message = ex.message ?: "Zasób nie został znaleziony"
-        )
-        
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
-    }
-    
-    @ExceptionHandler(BadCredentialsException::class)
-    fun handleBadCredentialsException(ex: BadCredentialsException): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.UNAUTHORIZED.value(),
-            error = "Unauthorized",
-            message = ex.message ?: "Nieprawidłowe dane logowania"
-        )
-        
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse)
-    }
-    
+
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.BAD_REQUEST.value(),
-            error = "Bad Request",
-            message = ex.message ?: "Nieprawidłowe żądanie"
-        )
-        
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
+    fun handleIllegalArgumentException(
+        ex: IllegalArgumentException
+    ): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(message = ex.message ?: "Nieprawidłowe dane"))
     }
-    
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentialsException(
+        ex: BadCredentialsException
+    ): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ErrorResponse(message = ex.message ?: "Nieprawidłowe dane logowania"))
+    }
+
     @ExceptionHandler(IllegalStateException::class)
-    fun handleIllegalStateException(ex: IllegalStateException): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.CONFLICT.value(),
-            error = "Conflict",
-            message = ex.message ?: "Operacja nie może być wykonana"
-        )
-        
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse)
+    fun handleIllegalStateException(
+        ex: IllegalStateException
+    ): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(ErrorResponse(message = ex.message ?: "Operacja niedozwolona"))
     }
-    
+
     @ExceptionHandler(Exception::class)
-    fun handleGenericException(ex: Exception): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            error = "Internal Server Error",
-            message = "Wystąpił błąd serwera. Spróbuj ponownie później."
-        )
-        
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
+    fun handleGenericException(
+        ex: Exception
+    ): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ErrorResponse(message = "Wystąpił błąd serwera"))
     }
 }
-
-data class ErrorResponse(
-    val timestamp: LocalDateTime,
-    val status: Int,
-    val error: String,
-    val message: String,
-    val details: Map<String, String>? = null
-)
